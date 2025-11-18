@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevCard Editor</title>
+    
+    <link rel="stylesheet" href="style-editor.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+    <script src="https://kit.fontawesome.com/dd043feaac.js" crossorigin="anonymous"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="images/favicon-16x16.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Press+Start+2P&family=Vollkorn&family=Architects+Daughter&family=Nunito&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body class="theme-classic-page">
+
+    <div class="editor-container">
+
+        <aside class="sidebar">
+            <div class="dashboard">
+                
+                <h2 class="sidebar-title">DevCard Editor</h2>
+                
+                <div class="controls-section">
+                    <h3>1. Enter your Data</h3>
+                    
+                    <label for="input-nome">Full Name:</label>
+                    <input type="text" id="input-nome" placeholder="E.g. Francesco Mistero">
+                    
+                    <label for="input-ruolo">Role:</label>
+                    <input type="text" id="input-ruolo" placeholder="E.g. Computer Science Student">
+                    
+                    <label for="input-bio">
+                        Bio: <span id="bio-counter" style="font-weight: normal; font-size: 0.85rem; color: #888;">(0/170)</span>
+                    </label>
+                    <textarea id="input-bio" placeholder="Write a short professional bio..." maxlength="170"></textarea>
+
+                    <label for="input-img-upload" class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span id="file-upload-text">Choose a file...</span>
+                    </label>
+                    <input type="file" id="input-img-upload" accept="image/png, image/jpeg" class="hidden-file-input">
+
+                    <div class="photo-actions">
+                        <button id="remove-photo-btn" type="button" class="danger-button small-button">
+                            <i class="fas fa-magic"></i> Clear Photo
+                        </button>
+                    </div>
+                    
+                    <div class="skills-manager">
+                        <label>Skills: <span id="skill-counter">(0 / 15)</span></label>
+                        <div id="selected-skills-preview">
+                            <p class="skills-placeholder">Click 'Add Skills' to start...</p>
+                        </div>
+                        <button id="toggle-skills-drawer" type="button">
+                            <i class="fas fa-plus"></i> Add / Remove Skills
+                        </button>
+                        <button id="clear-skills-btn" type="button" class="danger-button">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                        <div id="skills-drawer" class="hidden">
+                            <div id="skills-grid"> </div>
+                        </div>
+                    </div>
+
+                    <div class="socials-manager">
+                        <label>Social Links:</label>
+                        <button id="toggle-socials-drawer" type="button">
+                            <i class="fas fa-share-alt"></i> Add / Edit Socials
+                        </button>
+                        <div id="socials-drawer" class="hidden"> </div>
+                    </div>
+                </div>
+                
+                <div class="controls-section">
+                    <h3>2. Choose a Theme</h3>
+                    
+                    <div class="theme-group">
+                        <h4>Classic Themes</h4>
+                        <div class="theme-buttons-grid">
+                            <button class="theme-button" data-theme="theme-classic" data-page="theme-classic-page">
+                                <i class="fas fa-sun"></i> Classic
+                            </button>
+                            <button class="theme-button" data-theme="theme-dark" data-page="theme-dark-page">
+                                <i class="fas fa-moon"></i> Dark
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="theme-group">
+                        <h4>Cool Themes</h4>
+                        <div class="theme-buttons-grid">
+                            <button class="theme-button" data-theme="theme-minimal" data-page="theme-minimal-page">Minimal</button>
+                            <button class="theme-button" data-theme="theme-cyberpunk" data-page="theme-cyberpunk-page">Cyberpunk</button>
+                            <button class="theme-button" data-theme="theme-retro" data-page="theme-retro-page">Retro</button>
+                            <button class="theme-button" data-theme="theme-corporate" data-page="theme-corporate-page">Corporate</button>
+                            <button class="theme-button" data-theme="theme-glass" data-page="theme-glass-page">Glass</button>
+                            <button class="theme-button" data-theme="theme-sketch" data-page="theme-sketch-page">Sketch</button>
+                            <button class="theme-button" data-theme="theme-ide" data-page="theme-ide-page">IDE</button>
+                            <button class="theme-button" data-theme="theme-calm" data-page="theme-calm-page">Calm</button>
+                            <button class="theme-button" data-theme="theme-neubrutalism" data-page="theme-neubrutalism-page">Neubrutalism</button>
+                            <button class="theme-button" data-theme="theme-ocean" data-page="theme-ocean-page">Ocean</button>
+                            <button class="theme-button" data-theme="theme-material" data-page="theme-material-page">Material</button>
+                            <button class="theme-button" data-theme="theme-solarized" data-page="theme-solarized-page">Solarized</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="controls-section">
+                    <h3>3. Download / Share</h3>
+                    
+                    <button id="download-with-bg-btn" class="cta-button primary-download">
+                        <i class="fas fa-image"></i> Download with Background
+                    </button>
+                    
+                    <button id="download-card-only-btn" class="cta-button secondary-download">
+                        <i class="fas fa-crop"></i> Card Only (Transparent)
+                    </button>
+                </div>
+                
+            </div>
+        </aside>
+
+        <main class="preview-area">
+            
+            <div class="DevCard theme-classic" id="card-template">
+
+                <div class="card-left"> 
+                    <img id="card-img" src="https://via.placeholder.com/150" alt="Profile Photo">
+                    
+                    <div class="card-skills">
+                        <ul id="card-skill-list">
+                            </ul>    
+                    </div>
+                </div>
+
+                <div class="card-right">
+                    <div class="card-header">
+                        <h1 id="card-name">Full Name</h1>
+                        <h2 id="card-role">Professional Role</h2>
+                    </div>
+                    
+                    <div class="card-socials">
+                         </div>
+
+                    <div class="card-bio">
+                        <p id="card-bio">Short bio or professional description.</p>
+                    </div>
+                </div>
+                
+                <div class="watermark" id="card-watermark">
+                    Created with DevCard
+                </div>
+
+            </div>
+            
+        </main>
+
+    </div> 
+
+    <script src="script-editor.js"></script>
+</body>
+</html>
