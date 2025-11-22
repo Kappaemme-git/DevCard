@@ -421,100 +421,147 @@ function setupThemeSwitcher() {
         });
     });
 }
-
 /* ==================================== */
-/* 7. GESTIONE DOWNLOAD (SQUARE ZOOMED) */
+/* 7. GESTIONE DOWNLOAD (ULTRA-ZOOM FINALE) */
 /* ==================================== */
 
 function setupDownloadButton() {
-    const downloadWithBgBtn = document.getElementById('download-with-bg-btn');
-    const downloadCardOnlyBtn = document.getElementById('download-card-only-btn');
-    
-    const cardToDownload = document.getElementById('card-template');
-    const previewArea = document.querySelector('.preview-area');
-    const cardBio = cardToDownload.querySelector('.card-bio');
-    
-    const processCapture = (mode) => {
-        document.body.classList.add('is-downloading');
+    const downloadWithBgBtn = document.getElementById('download-with-bg-btn');
+    const downloadCardOnlyBtn = document.getElementById('download-card-only-btn');
+
+    const cardToDownload = document.getElementById('card-template');
+    const previewArea = document.querySelector('.preview-area');
+    const cardBio = cardToDownload.querySelector('.card-bio');
+    
+    const processCapture = (mode) => {
+        document.body.classList.add('is-downloading');
+        
+        const originalCardHeight = cardToDownload.style.height;
+        const originalBioHeight = cardBio.style.maxHeight;
+        const originalBioOverflow = cardBio.style.overflowY;
+        const originalPreviewPadding = previewArea.style.padding;
+        const originalBg = previewArea.style.background;
+        const originalPreviewWidth = previewArea.style.width;
+        const originalPreviewHeight = previewArea.style.height;
+        const originalCardMargin = cardToDownload.style.margin; 
+        const originalPreviewMinHeight = previewArea.style.minHeight;
+        const originalPreviewDisplay = previewArea.style.display;
+        const originalPreviewJustifyContent = previewArea.style.justifyContent;
+        const originalPreviewAlignItems = previewArea.style.alignItems;
+
+
+        cardToDownload.style.height = 'auto'; 
+        cardBio.style.maxHeight = 'none';
+        cardBio.style.overflowY = 'visible';
+        
+        previewArea.style.minHeight = '0'; 
+        previewArea.style.margin = '0 auto'; 
+        previewArea.style.display = 'flex';
+        previewArea.style.justifyContent = 'center';
         
-        const originalCardHeight = cardToDownload.style.height;
-        const originalBioHeight = cardBio.style.maxHeight;
-        const originalBioOverflow = cardBio.style.overflowY;
-        const originalPreviewPadding = previewArea.style.padding;
-        const originalBg = previewArea.style.background;
-        const originalPreviewWidth = previewArea.style.width;
-        const originalPreviewHeight = previewArea.style.height;
-        const originalCardMargin = cardToDownload.style.margin; 
+        let targetElement = previewArea;
+        let finalBgColor = null; 
+        let captureWidth = 0;
+        let captureHeight = 0;
+        let captureX = 0;
+        let captureY = 0;
 
-        const cardWidth = cardToDownload.offsetWidth;
-        const cardHeight = cardToDownload.offsetHeight;
-        const deltaHeight = Math.max(0, cardWidth - cardHeight);
-        const verticalBuffer = Math.max(0, deltaHeight / 2);
+        if (mode === 'png-transparent') {
+            finalBgColor = null; 
+            previewArea.style.backgroundColor = ''; 
+            previewArea.style.backgroundImage = '';
 
-        cardToDownload.style.marginTop = `${verticalBuffer}px`;
-        cardToDownload.style.marginBottom = `${verticalBuffer}px`;
+            cardToDownload.style.margin = 'auto'; 
+            previewArea.style.padding = '30px'; 
+            previewArea.style.width = 'fit-content';
+            previewArea.style.height = 'fit-content';
+            previewArea.style.alignItems = 'center';
+            
+            captureWidth = previewArea.offsetWidth; 
+            captureHeight = previewArea.offsetHeight;
 
-        cardToDownload.style.height = 'auto'; 
-        cardBio.style.maxHeight = 'none';
-        cardBio.style.overflowY = 'visible';
-        
-        const paddingValue = (mode === 'png-transparent') ? '20px' : '30px'; 
-        previewArea.style.padding = paddingValue; 
-
-        previewArea.style.width = 'fit-content';
-        previewArea.style.height = 'fit-content';
-        previewArea.style.margin = '0 auto';
-
-        if (mode !== 'png-transparent') {
+        } else if (mode === 'png-bg') {
             const bodyStyle = window.getComputedStyle(document.body);
             previewArea.style.backgroundColor = bodyStyle.backgroundColor;
-            previewArea.style.backgroundImage = bodyStyle.backgroundImage;
-        }
+            previewArea.style.backgroundImage = bodyStyle.backgroundImage;
+            finalBgColor = bodyStyle.backgroundColor || 'white'; 
 
-        const canvasOptions = {
-            useCORS: true,
-            scale: 3, 
-            backgroundColor: null, 
-            logging: false
-        };
+            cardToDownload.style.margin = '0'; 
+            previewArea.style.padding = '15px'; 
+            previewArea.style.width = 'fit-content';
+            previewArea.style.height = 'fit-content';
+            previewArea.style.alignItems = 'center';
 
-        setTimeout(() => {
-            html2canvas(previewArea, canvasOptions).then(canvas => {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = (mode === 'png-transparent') ? 'devcard-square-transparent.png' : 'devcard-square-full.png';
-                link.click();
-                cleanup();
-            }).catch(err => {
-                console.error('Error:', err);
-                cleanup();
-            });
-        }, 100);
-
-        function cleanup() {
-            document.body.classList.remove('is-downloading');
-            cardToDownload.style.marginTop = originalCardMargin;
-            cardToDownload.style.marginBottom = originalCardMargin;
+            captureWidth = targetElement.offsetWidth;
+            captureHeight = targetElement.offsetHeight;
             
-            cardToDownload.style.height = originalCardHeight;
-            cardBio.style.maxHeight = originalBioHeight;
-            cardBio.style.overflowY = originalBioOverflow;
-            
-            previewArea.style.padding = originalPreviewPadding;
-            previewArea.style.background = originalBg;
-            previewArea.style.width = originalPreviewWidth;
-            previewArea.style.height = originalPreviewHeight;
-            previewArea.style.margin = '';
-            previewArea.style.backgroundColor = '';
-            previewArea.style.backgroundImage = '';
-        }
-    };
+        } 
 
-    if (downloadWithBgBtn) downloadWithBgBtn.addEventListener('click', () => processCapture('png-bg'));
-    if (downloadCardOnlyBtn) downloadCardOnlyBtn.addEventListener('click', () => processCapture('png-transparent'));
+
+        const finalCanvasDimension = Math.max(captureWidth, captureHeight);
+
+
+        const canvasOptions = {
+            useCORS: true,
+            scale: 5, 
+            x: captureX,
+            y: captureY,
+            width: captureWidth, 
+            height: captureHeight,
+            backgroundColor: finalBgColor, 
+            logging: false
+        };
+
+        setTimeout(() => {
+            html2canvas(targetElement, canvasOptions).then(canvas => {
+                const link = document.createElement('a');
+                
+                let linkDownloadName;
+                if (mode === 'png-transparent') {
+                    linkDownloadName = 'devcard-square-transparent.png';
+                } else {
+                    linkDownloadName = 'devcard-square-full.png';
+                }
+                
+                link.href = canvas.toDataURL('image/png');
+                link.download = linkDownloadName;
+                link.click();
+                cleanup();
+            }).catch(err => {
+                console.error('Error:', err);
+                cleanup();
+            });
+        }, 100);
+
+        function cleanup() {
+            document.body.classList.remove('is-downloading');
+            
+            cardToDownload.style.height = originalCardHeight;
+            cardToDownload.style.marginTop = originalCardMargin;
+            cardToDownload.style.marginBottom = originalCardMargin;
+            cardToDownload.style.margin = originalCardMargin;
+            cardBio.style.maxHeight = originalBioHeight;
+            cardBio.style.overflowY = originalBioOverflow;
+            previewArea.style.padding = originalPreviewPadding;
+            previewArea.style.background = originalBg;
+            previewArea.style.width = originalPreviewWidth;
+            previewArea.style.height = originalPreviewHeight;
+            previewArea.style.margin = '0 auto';
+            previewArea.style.backgroundColor = '';
+            previewArea.style.backgroundImage = '';
+            previewArea.style.minHeight = originalPreviewMinHeight;
+            previewArea.style.display = originalPreviewDisplay;
+            previewArea.style.justifyContent = originalPreviewJustifyContent;
+            previewArea.style.alignItems = originalPreviewAlignItems;
+        }
+    };
+
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', downloadPDF);
+    
+    if (downloadWithBgBtn) downloadWithBgBtn.addEventListener('click', () => processCapture('png-bg'));
+    if (downloadCardOnlyBtn) downloadCardOnlyBtn.addEventListener('click', () => processCapture('png-transparent'));
 }
-
-
 /* ==================================== */
 /* 9. ESECUZIONE PRINCIPALE  */
 /* ==================================== */
@@ -550,17 +597,96 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (removePhotoBtn) {
         removePhotoBtn.addEventListener('click', () => {
-            // FIX CHIAVE: Imposta il valore a null per resettare correttamente il campo file
             if (inputImgUpload) inputImgUpload.value = null; 
             if (fileUploadText) fileUploadText.textContent = "Choose a file...";
             
-            // Rigenera l'avatar chiamando la funzione API
             setRandomAvatar(); 
         });
     }
-    // --- FINE LOGICA ---
 
-    // Watermark
     const wm = document.getElementById('card-watermark');
     if(wm) wm.style.display = 'block';
 });
+
+/* ==================================== */
+/* FUNZIONE PDF: FIX DEFINITIVO (MAILTO ATTIVO) */
+/* ==================================== */
+
+function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const originalCard = document.getElementById('card-template');
+    
+    document.body.classList.add('is-downloading');
+
+    const clone = originalCard.cloneNode(true);
+    const ghostContainer = document.createElement('div');
+    
+    ghostContainer.style.position = 'fixed';
+    ghostContainer.style.top = '-10000px'; 
+    ghostContainer.style.left = '-10000px';
+    
+    ghostContainer.style.width = '1100px'; 
+    
+    ghostContainer.style.padding = '40px';
+    ghostContainer.style.backgroundColor = '#ffffff';
+    ghostContainer.style.display = 'flex';
+    ghostContainer.style.justifyContent = 'center';
+    ghostContainer.style.alignItems = 'center';
+    ghostContainer.style.zIndex = '-9999';
+    
+    clone.style.margin = '0';
+    clone.style.height = 'auto';
+    
+    ghostContainer.appendChild(clone);
+    document.body.appendChild(ghostContainer);
+
+    html2canvas(ghostContainer, {
+        useCORS: true,
+        scale: 4, 
+        backgroundColor: '#ffffff',
+        logging: false
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        
+        const contentWidth = ghostContainer.offsetWidth;
+        const contentHeight = ghostContainer.offsetHeight;
+
+        const pdf = new jsPDF({
+            orientation: contentWidth > contentHeight ? 'l' : 'p',
+            unit: 'px',
+            format: [contentWidth, contentHeight]
+        });
+        
+        pdf.addImage(imgData, 'JPEG', 0, 0, contentWidth, contentHeight);
+
+        const socialLinks = clone.querySelectorAll('.card-socials a');
+        const containerRect = ghostContainer.getBoundingClientRect();
+
+        socialLinks.forEach(link => {
+            const href = link.href;
+            const linkRect = link.getBoundingClientRect();
+
+            const x = linkRect.left - containerRect.left;
+            const y = linkRect.top - containerRect.top;
+            const w = linkRect.width;
+            const h = linkRect.height;
+
+            if (href) {
+                pdf.link(x, y, w, h, { url: href });
+            }
+        });
+//coap
+        pdf.save('devcard-interactive.pdf');
+        
+        document.body.removeChild(ghostContainer);
+        document.body.classList.remove('is-downloading');
+
+    }).catch(err => {
+        console.error('Errore PDF:', err);
+        alert('Errore generazione PDF.');
+        if (document.body.contains(ghostContainer)) {
+            document.body.removeChild(ghostContainer);
+        }
+        document.body.classList.remove('is-downloading');
+    });
+}
