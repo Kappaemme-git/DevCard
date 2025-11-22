@@ -675,7 +675,7 @@ function downloadPDF() {
                 pdf.link(x, y, w, h, { url: href });
             }
         });
-//coap
+
         pdf.save('devcard-interactive.pdf');
         
         document.body.removeChild(ghostContainer);
