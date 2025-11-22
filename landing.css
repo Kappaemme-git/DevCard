@@ -28,6 +28,11 @@ body {
     align-items: center;
 }
 
+.navbar .support-button {
+    margin-left: auto;  
+    margin-right: 15px; 
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -200,7 +205,12 @@ body {
     line-height: 1.6;
 }
 
-
+.header-actions {
+    display: flex; /* Trasforma il wrapper in un contenitore flex */
+    align-items: center; /* Allinea perfettamente i due pulsanti al centro verticale */
+    gap: 15px; /* Spazio tra i due pulsanti */
+    margin-left: auto; /* Pulisce lo spazio, spingendo il gruppo a destra */
+}
 /* ==================================== */
 /* 2. STILI ANTEPRIMA CARD (Generici)   */
 /* ==================================== */
